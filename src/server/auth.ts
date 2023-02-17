@@ -4,6 +4,7 @@ import {
   type NextAuthOptions,
   type DefaultSession,
 } from 'next-auth'
+import type { JWT } from 'next-auth/jwt/types.js'
 import SpotifyProvider from 'next-auth/providers/spotify'
 import { env } from '../env.mjs'
 
@@ -16,10 +17,7 @@ import { env } from '../env.mjs'
  **/
 declare module 'next-auth' {
   interface Session extends DefaultSession {
-    user: {
-      // ...other properties
-      // role: UserRole;
-    } & DefaultSession['user']
+    user: JWT
   }
 
   // interface User {
@@ -38,21 +36,26 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     jwt({ token, account }) {
       if (account) {
-        token.accessToken = account.refresh_token
+        token.id = account.id
+        token.expires_at = account.expires_at
+        token.accessToken = account.access_token
       }
+      console.log(token)
       return token
     },
     session({ session, token }) {
-      console.log('session', session.user)
-      console.log('token', token)
       session.user = token
       return session
     },
   },
   providers: [
     SpotifyProvider({
-      authorization:
-        'https://accounts.spotify.com/authorize?scope=user-read-email,playlist-read-private',
+      authorization: {
+        params: {
+          scope:
+            'user-read-recently-played user-read-playback-state user-top-read user-modify-playback-state user-read-currently-playing user-follow-read playlist-read-private user-read-email user-read-private user-library-read playlist-read-collaborative',
+        },
+      },
       clientId: env.SPOTIFY_CLIENT_ID,
       clientSecret: env.SPOTIFY_CLIENT_SECRET,
     }),

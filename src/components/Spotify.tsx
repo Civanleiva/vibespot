@@ -5,7 +5,7 @@ export default function Spotify() {
   if (session) {
     return (
       <>
-        <span className="undefined flex items-center rounded-full border border-green-500 px-4 py-2 text-base text-green-500 ">
+        <span className="undefined flex cursor-default items-center rounded-full border border-green-500 px-4 py-2 text-base text-green-500 ">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="16"
@@ -21,7 +21,7 @@ export default function Spotify() {
           </span>
         </span>
         <button
-          className="bg-red-2 rounded-full  border border-red-600 px-4 py-2 text-base text-red-600"
+          className="bg-red-2 rounded-full border border-red-600 px-4 py-2 text-base text-red-600 hover:bg-red-600 hover:text-[#121212]"
           onClick={() => void signOut()}
         >
           Sign out
@@ -33,7 +33,7 @@ export default function Spotify() {
     <>
       <h3 className="text-primary">Not signed in</h3>
       <button
-        className="bg-red-2 rounded-full  border border-green-600 px-4 py-2 text-base text-green-600"
+        className="bg-red-2 rounded-full border border-green-600 px-4 py-2 text-base text-green-600 hover:bg-green-600 hover:text-[#121212]"
         onClick={() => void signIn()}
       >
         Sign in

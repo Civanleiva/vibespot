@@ -8,10 +8,10 @@ export default async function handler(
 ) {
   const session = await getSession({ req })
 
-  const playlists = await fetchSpotify(
+  const artists = await fetchSpotify(
     'https://api.spotify.com/v1/me/top/artists?limit=50',
     session
   )
 
-  res.status(200).json(playlists)
+  res.status(200).json(artists)
 }

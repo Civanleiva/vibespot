@@ -1,7 +1,50 @@
 import { useSession, signIn, signOut } from 'next-auth/react'
+import { useEffect, useState } from 'react'
+import { fetchSpotify } from '../lib/fetch-spotify'
+
+type Artist = {
+  name: string
+  id: string
+  images: string[]
+  genres: string[]
+  popularity: number
+}
+
+type Data = {
+  items: Artist[]
+}
 
 export default function Spotify() {
+  const [artists, setArtists] = useState<Artist[]>()
+  const [mood, setMood] = useState<string>('')
   const { data: session } = useSession()
+
+  useEffect(() => {
+    void fetch('/api/artists')
+      .then(res => res.json())
+      .then((data: Data) => {
+        if (data.items) setArtists(data.items)
+      })
+  }, [])
+
+  const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setMood(e.target.value)
+  }
+
+  const generatePlaylist = async () => {
+    const topTracks: { [key: string]: object[] } = {}
+    if (typeof artists !== 'undefined') {
+      for (const artist of artists) {
+        const artistTopTracks = await fetchSpotify(
+          'artists/' + artist.id + '/top-tracks',
+          session
+        )
+        console.log(artistTopTracks)
+        topTracks[artist.id] = []
+      }
+    }
+  }
+
   if (session) {
     return (
       <>
@@ -22,10 +65,40 @@ export default function Spotify() {
         </span>
         <button
           className="bg-red-2 rounded-full border border-red-600 px-4 py-2 text-base text-red-600 hover:bg-red-600 hover:text-[#121212]"
-          onClick={() => void signOut()}
+          onClick={() => void signOut}
         >
           Sign out
         </button>
+        {session && (
+          <div className="text-center">
+            <label
+              htmlFor="moods"
+              className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+            >
+              Choose your mood
+            </label>
+            <select
+              onChange={handleSelect}
+              className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+            >
+              <option defaultValue={''} className="hidden">
+                Choose a mood
+              </option>
+              <option value="Happy">Happy</option>
+              <option value="Angry">Angry</option>
+              <option value="Sad">Sad</option>
+              <option value="Neutral">Neutral</option>
+            </select>
+          </div>
+        )}
+        {mood !== '' && (
+          <button
+            className="bg-red-2 rounded-full border border-primary px-4 py-2 text-base text-primary hover:bg-primary hover:text-[#121212]"
+            onClick={() => void generatePlaylist}
+          >
+            Generate playlist
+          </button>
+        )}
       </>
     )
   }

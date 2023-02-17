@@ -40,7 +40,6 @@ export const authOptions: NextAuthOptions = {
         token.expires_at = account.expires_at
         token.accessToken = account.access_token
       }
-      console.log(token)
       return token
     },
     session({ session, token }) {

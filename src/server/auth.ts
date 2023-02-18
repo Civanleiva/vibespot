@@ -52,7 +52,7 @@ export const authOptions: NextAuthOptions = {
       authorization: {
         params: {
           scope:
-            'user-read-recently-played user-read-playback-state user-top-read user-modify-playback-state user-read-currently-playing user-follow-read playlist-read-private user-read-email user-read-private user-library-read playlist-read-collaborative',
+            'user-top-read user-follow-read playlist-read-private playlist-modify-private',
         },
       },
       clientId: env.SPOTIFY_CLIENT_ID,
